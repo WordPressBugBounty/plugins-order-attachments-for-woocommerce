@@ -1,0 +1,114 @@
+.wcoa-loading {
+	width: 1rem;
+	height: 1rem;
+	color: grey;
+	animation: spin 1s ease-in-out infinite;
+	background: url('../icons/loader.svg');
+}
+
+.toplevel_page_wcoa td {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+#wcoa-order-attachments-list li {
+	display: flex;
+	align-items: center;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+#wcoa-order-attachments-list li a {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: calc(100% - 20px);
+	display: inline-block;
+}
+
+.copy-to-clipboard {
+	width: 20px;
+	height: 20px;
+	background-image: url('../icons/copy.svg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	margin-left: 2px;
+	margin-bottom: 2px;
+	cursor: pointer;
+}
+
+.copy-to-clipboard:active {
+	background-color: lightgray;
+}
+
+.copy-to-clip-tooltip {
+	width: 150px;
+	background-color: rgba(255, 0, 0, 0.5);
+	position: fixed;
+	bottom: 270px;
+	right: 130px;
+	z-index: 10;
+	text-align: center;
+}
+
+.wcoa-btn {
+	color: #2271b1;
+}
+
+.wcoa-btn:hover {
+	color: #1e6199;
+	cursor: pointer;
+}
+
+.wcoa-att-preview::before {
+	content: "\f177";
+}
+
+.wcoa-att-email::before {
+	font-family: dashicons;
+	content: "\f465";
+}
+
+.wcoa-att-email-sent::before {
+	font-family: dashicons;
+	content: "\f15e";
+}
+
+.wcoa-att-email-error::before {
+	font-family: dashicons;
+	content: "\f534";
+	color: #761919 !important;
+}
+
+.wcoa-email-success {
+	color: #5b841b !important;
+}
+
+.wcoa-att-trash::before {
+	font-family: dashicons;
+	content: "\f182";
+}
+
+.wcoa-content-show {
+	display: block;
+}
+
+.wcoa-content-hide {
+	display: none;
+}
+
+.wcoa-input-200 {
+	width: 200px;
+}
+
+.wcoa-input-400 {
+	width: 400px;
+}
+
+.wcoa-input-600 {
+	width: 600px;
+}
+
+.wcoa-weight-600 {
+	font-weight: 600;
+}

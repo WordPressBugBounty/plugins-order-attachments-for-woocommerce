@@ -1,0 +1,96 @@
+*** Changelog ***
+
+= 2.4.1 - 08/10/2024 =
+
+* Fixed - Missing attachment link in email messages when HPOS mode is enabled.
+* Added - More logging throughout the application for improved event tracking.
+* Tested with WordPress 6.6.2
+* Tested with WooCommerce 9.3.3
+
+= 2.4.0 - 24/08/2024 =
+
+* Added - Composer support for dependency management.
+* Added - PSR-4 autoloading standard for improved class loading and organization.
+* Added - Logging functionality to track plugin events and errors.
+* Added - Option to display attachment name on the 'My Account → Attachments' page.
+* Added - Option to copy the attachment URL to the clipboard in the order edit screen.
+* Tested with WooCommerce 9.2.2
+
+= 2.3.2 - 16/08/2024 =
+
+* Fixed - Fatal error on deleting attachment.
+
+= 2.3.1 - 16/08/2024 =
+
+* Fixed - Fatal error on activation plugin.
+
+= 2.3.0 - 15/08/2024 =
+
+* Added - Minimum required PHP version 8.0.
+* Fixed - Support for High-Performance Order Storage (HPOS).
+* Fixed - SQL queries.
+* Fixed - Display of the attachment list.
+* Bug fixes.
+* Tested with WordPress 6.6.1
+* Tested with WooCommerce 9.1.4
+
+= 2.2.2 - 07/01/2024 =
+
+* Fixed - translations
+* Fixed - SQL queries
+
+= 2.2.1 - 05/01/2024 =
+
+* Bug fixes.
+
+= 2.2.0 - 05/01/2024 =
+
+* Added - Support for High-Performance Order Storage (HPOS)
+* Added - Ability to set a custom URL for the My Account → Attachments endpoint.
+* Added - Ability to set a prefix for the attachment file name.
+* Fixed - Permissions handling.
+* Fixed translations.
+* Bug fixes.
+* Tested with WordPress 6.4.2
+* Tested with WooCommerce 8.4.0
+
+= 2.1.1 - 21/04/2023 =
+
+* Fixed - View of attachments in the My Account tab.
+* Fixed translations.
+* Bug fixes.
+* Tested with WooCommerce 7.6.0
+
+= 2.1 - 07/04/2023 =
+
+* Added - Ability to send information about attachments in completed order email.
+
+= 2.0.1 - 03/04/2023 =
+
+* Bug fixes.
+
+= 2.0 - 03/04/2023 =
+
+* Added - Ability to add more than one attachment per order.
+* Added - The email is sent automatically after adding an attachment.
+* Added - The 'Attachments' tab in the administration menu.
+* 'Attachments' tab - Preview of all orders, the ability to resend an email, deleting an attachment.
+* 'Attachments' tab, Settings - Possibility to change the subject, content and preview button in the email template.
+* 'Attachments' tab, Settings - Possibility to disable/enable automatic emails after adding an attachment.
+* Added - The 'Attachments' tab in the My Account menu.
+* Plugin rebuild.
+* Compatibility with the attachment from previous versions of the plugin.
+* Tested with WordPress 6.2
+* Tested with WooCommerce 7.5.1
+
+
+= 1.1 - 07/04/2022 =
+
+* Bug fixes.
+* Added - Option to delete an attachment while editing an order.
+* Tested with WordPress 5.9.3
+* Tested with WooCommerce 6.3.1
+
+= 1.0 - 13/01/2022 =
+
+* Initial release

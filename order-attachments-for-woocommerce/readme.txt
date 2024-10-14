@@ -3,7 +3,7 @@
 Contributors: sldesignpl, directsoftware
 Tags: woocommerce, shop, attachments, order, notifications
 Tested up to: 6.6.2
-Stable tag: 2.4.1
+Stable tag: 2.5.1
 Requires at least: 5.5
 Requires PHP: 8.0
 License: GNU General Public License v3.0
@@ -46,6 +46,15 @@ Yes, this plugin is compatible with all latest version of WooCommerce themes.
 5. 'Attachments' tab - settings.
 
 == Changelog ==
+
+= 2.5.1 =
+*   Fixed - Versioning of styles and scripts.
+
+= 2.5.0 =
+*   Added - Check whether the attachment's extension is within the range returned by the get_allowed_mime_types() function.
+*   Added - Check whether the user has the permission to edit the order to which the attachment is being added, using the current_user_can() function and the 'edit_post' capability.
+*   Added - Verification of the attachment request to ensure it does not originate from outside the website using the check_ajax_referer() function.
+*   Added - Shortcode [wcoa_display_all_attachments], which allows displaying all orders for the current user.
 
 = 2.4.1 =
 *   Fixed - Missing attachment link in the email message when HPOS mode is enabled.

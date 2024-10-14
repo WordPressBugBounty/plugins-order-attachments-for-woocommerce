@@ -9,6 +9,7 @@ use DirectSoftware\WCOA\Attachments\Attachment;
 use DirectSoftware\WCOA\Attachments\RedirectionHandler;
 use DirectSoftware\WCOA\Common\Notification;
 use DirectSoftware\WCOA\Common\Options;
+use DirectSoftware\WCOA\Functions\DisplayAllAttachmentsAsShortcode;
 use DirectSoftware\WCOA\Utils\Ajax;
 use DirectSoftware\WCOA\Utils\Logger;
 use DirectSoftware\WCOA\Utils\MyAccount;
@@ -19,6 +20,8 @@ use Throwable;
  */
 class Kernel
 {
+    public const SHORTCODE_DISPLAY_ALL_ATTACHMENTS = "wcoa_display_all_attachments";
+
 	private static ?Kernel $instance = null;
 
 	private bool $hpos_is_enabled;
@@ -30,6 +33,7 @@ class Kernel
 		add_action('before_woocommerce_init', [$this, 'verify_hpos']);
 		add_action('add_meta_boxes', [$this, 'init_meta_box']);
 		add_action('admin_footer', [$this, 'load_js']);
+		add_action('admin_footer', [$this, 'load_ajax_nonce']);
 		add_action('admin_enqueue_scripts', [$this, 'load_css']);
 		add_filter('plugin_action_links_' . WCOA_BASENAME, [$this, 'plugin_donate_link']);
 		add_filter('plugin_action_links_' . WCOA_BASENAME, [$this, 'plugin_settings_link']);
@@ -56,6 +60,8 @@ class Kernel
 			MyAccount::getInstance();
 			Options::getInstance();
 			RedirectionHandler::getInstance();
+
+			add_shortcode( self::SHORTCODE_DISPLAY_ALL_ATTACHMENTS, new DisplayAllAttachmentsAsShortcode);
         }
         catch (Throwable $e)
         {
@@ -65,7 +71,18 @@ class Kernel
 
 	public static function load_js(): void
 	{
-		wp_enqueue_script( 'wcoa-app', plugins_url('../../assets/admin/js/wcoa.js', __FILE__));
+		wp_enqueue_script(
+                'wcoa-app',
+                plugins_url('../../assets/admin/js/wcoa.js', __FILE__),
+            [],
+			WCOA_PLUGIN_VERSION
+        );
+	}
+
+    public static function load_ajax_nonce(): void
+    {
+	    $nonce = wp_create_nonce(Ajax::ADD_ATTACHMENT_ACTION);
+		echo sprintf("<script id=\"wcoa-common\">const %s = \"%s\";</script>", Ajax::ADD_ATTACHMENT_NONCE, $nonce);
 	}
 
 	public static function init_menu_page(): void
@@ -88,7 +105,12 @@ class Kernel
 
 	public static function load_css(): void
 	{
-		wp_enqueue_style( 'wcoa-app', plugins_url( '../../assets/admin/css/style.css' , __FILE__ ));
+		wp_enqueue_style(
+                'wcoa-app',
+                plugins_url( '../../assets/admin/css/style.css' , __FILE__ ),
+            [],
+			WCOA_PLUGIN_VERSION
+        );
 	}
 
 	public static function init_meta_box(): void

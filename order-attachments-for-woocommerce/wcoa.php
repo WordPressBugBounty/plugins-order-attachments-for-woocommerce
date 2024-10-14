@@ -7,7 +7,7 @@
  * Author URI: https://directsoftware.pl
  * Text Domain: sld-wcoa
  * Domain Path: /languages
- * Version: 2.4.1
+ * Version: 2.5.1
  * Requires at least: 5.5
  * Requires PHP: 8.0
  * Tested up to: 6.6.2
@@ -23,7 +23,7 @@ if (!defined('ABSPATH'))
 
 use DirectSoftware\WCOA\Kernel;
 
-define( 'WCOA_PLUGIN_VERSION', '2.4.1' );
+define( 'WCOA_PLUGIN_VERSION', '2.5.1' );
 define( 'WCOA_PLUGIN_PATH', __FILE__);
 define( 'WCOA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WCOA_PLUGIN_URL', plugins_url( '', __FILE__ ) );

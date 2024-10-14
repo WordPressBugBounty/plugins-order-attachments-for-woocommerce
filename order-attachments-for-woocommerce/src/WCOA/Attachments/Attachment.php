@@ -3,9 +3,13 @@
 namespace DirectSoftware\WCOA\Attachments;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
+use DirectSoftware\WCOA\Attachments\Data\AttachmentFile;
+use DirectSoftware\WCOA\Attachments\Data\BaseFile;
 use DirectSoftware\WCOA\Common\Notification;
 use DirectSoftware\WCOA\Common\Options;
+use DirectSoftware\WCOA\Exception\InvalidFileTypeException;
 use DirectSoftware\WCOA\Kernel;
+use DirectSoftware\WCOA\Utils\FileUtils;
 use DirectSoftware\WCOA\Utils\Logger;
 
 /**
@@ -13,7 +17,7 @@ use DirectSoftware\WCOA\Utils\Logger;
  */
 class Attachment
 {
-	private array $file;
+	private BaseFile $file;
 
 	private int $order_id;
 
@@ -24,20 +28,23 @@ class Attachment
 
 	public function __construct(array $file, int $order_id)
 	{
-		$this->file = $file;
+		$this->file = BaseFile::getInstance($file);
 		$this->order_id = $order_id;
 		$this->kernel = Kernel::getInstance();
 		$this->logger = Logger::getInstance();
 	}
 
-	public function save(): bool|array
+	/**
+	 * @throws InvalidFileTypeException
+	 */
+	public function save(): AttachmentFile|null
 	{
 		$this->logger->info('File save initiated.');
 		$attachment = $this->upload();
 
-		if ($attachment !== false)
+		if ($attachment !== null)
 		{
-			$notification = new Notification($this->order_id, $attachment['id']);
+			$notification = new Notification($this->order_id, $attachment->getId());
 			$notification->create_note();
 
 			if (Options::get('email_enabled') === true)
@@ -50,29 +57,34 @@ class Attachment
 		}
 
 		$this->logger->error('File save failed.');
-		return false;
+		return null;
 	}
 
-	private function upload(): bool|array
+	/**
+	 * @return AttachmentFile|null
+	 * @throws InvalidFileTypeException
+	 */
+	private function upload(): AttachmentFile|null
 	{
 		require_once(ABSPATH . 'wp-admin/includes/image.php');
 		require_once(ABSPATH . 'wp-admin/includes/file.php');
 		require_once(ABSPATH . 'wp-admin/includes/media.php');
 
 		// check if the file exists
-		if (!isset($this->file['name']))
+		if ($this->file->isEmpty())
 		{
-			$this->logger->warning('No file to upload.', $this->file);
-			return false;
+			$this->logger->warning('No file to upload.', $this->file->getOriginal());
+			return null;
 		}
 
-		$this->file['name'] = $this->get_attachment_prefix() . $this->file['name'];
+		$this->file->setPrefix($this->get_attachment_prefix());
 
 		// get the file type from the file name
-		$file_type = wp_check_filetype(basename($this->file['name']));
+		$file_type = wp_check_filetype($this->file->getBasename());
+		FileUtils::checkType($file_type);
 
 		// create file in the upload folder
-		$attachment = wp_upload_bits($this->file['name'], null, file_get_contents($this->file['tmp_name']));
+		$attachment = wp_upload_bits($this->file->getName(), null, file_get_contents($this->file->getTemporaryName()));
 
 		$filename = $attachment['file'];
 
@@ -93,7 +105,7 @@ class Attachment
 
 		wp_update_attachment_metadata($attachment_id, $inserted_metadata);
 
-		if ( $this->kernel->hpos_is_enabled() && OrderUtil::get_order_type($this->order_id) === 'shop_order')
+		if ($this->kernel->hpos_is_enabled() && OrderUtil::get_order_type($this->order_id) === 'shop_order')
 		{
 			$order = wc_get_order($this->order_id);
 			if ($order)
@@ -107,13 +119,13 @@ class Attachment
 			add_post_meta($this->order_id, self::META_KEY, $attachment_id);
 		}
 
-		$result = [
-			'id' => $attachment_id,
-			'title' => $title,
-			'url' => $attachment['url']
-		];
+		$result = new AttachmentFile(
+			$attachment_id,
+			$title,
+			$attachment['url']
+		);
 
-		$this->logger->info('File upload result:', $result);
+		$this->logger->info('File upload result:', $result->toArray());
 
 		return $result;
 	}

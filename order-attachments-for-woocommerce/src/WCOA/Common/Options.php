@@ -2,6 +2,8 @@
 
 namespace DirectSoftware\WCOA\Common;
 
+use DirectSoftware\WCOA\Kernel;
+
 /**
  * @author d.gubala
  */
@@ -58,6 +60,7 @@ class Options
 
 		add_settings_field( 'option_attachments_endpoint', __('Endpoint URL','sld-wcoa'), [$this, 'option_input_text'], 'wcoa_general_page', 'my_account', self::params_attachments_endpoint());
 		add_settings_field( 'option_display_attachment_name', __('Display attachment name','sld-wcoa'), [$this, 'option_display_attachment_name'], 'wcoa_general_page', 'my_account' );
+		add_settings_field( 'option_display_attachment_shortcodes', __('Shortcodes'), [$this, 'option_display_shortcodes'], 'wcoa_general_page', 'my_account' );
 
 	}
 
@@ -196,6 +199,15 @@ class Options
 
 		print "<input id='option_display_attachment_name' name='wcoa_general[display_attachment_name]' type='checkbox' value='1' $content/>";
 		print "<label for='option_display_attachment_name'>" . esc_html__("Display attachment name on 'My Account → Attachments' page.", 'sld-wcoa') ."</label>";
+	}
+
+	/**
+	 * @since 2.5.0
+	 * @return void
+	 */
+	public function option_display_shortcodes(): void
+	{
+		print '<code>[' . Kernel::SHORTCODE_DISPLAY_ALL_ATTACHMENTS . ']</code>';
 	}
 
 	public function option_email_enabled(): void

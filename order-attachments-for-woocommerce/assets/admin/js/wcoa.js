@@ -42,6 +42,7 @@ jQuery(document).ready(function($) {
 		requestParams.append('action', 'wcoa_add_attachment');
 		requestParams.append('order_id', document.getElementById('post_ID').value );
 		requestParams.append('attachment', wcoaInputFileArea.files[0]);
+		requestParams.append('wcoa_add_attachment_nonce', wcoa_add_attachment_nonce);
 
 		responseArea.innerHTML = '<div class="wcoa-loading"></div>';
 

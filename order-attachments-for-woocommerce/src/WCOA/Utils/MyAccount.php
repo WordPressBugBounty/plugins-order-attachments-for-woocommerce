@@ -39,7 +39,7 @@ class MyAccount
 
 	public function load_front_css(): void
 	{
-		wp_enqueue_style( 'wcoa-front-app', WCOA_PLUGIN_URL . '/assets/frontend/css/style.css', false, 1.0);
+		wp_enqueue_style( 'wcoa-front-app', WCOA_PLUGIN_URL . '/assets/frontend/css/style.css', false, WCOA_PLUGIN_VERSION);
 	}
 
 	public function whitelist_update(array $vars): array

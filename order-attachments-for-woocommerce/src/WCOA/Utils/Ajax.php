@@ -4,6 +4,11 @@ namespace DirectSoftware\WCOA\Utils;
 
 use DirectSoftware\WCOA\Attachments\Attachment;
 use DirectSoftware\WCOA\Common\Notification;
+use DirectSoftware\WCOA\Exception\AjaxVerificationFailedException;
+use DirectSoftware\WCOA\Exception\InvalidFileTypeException;
+use DirectSoftware\WCOA\Exception\NoFileUploadedException;
+use DirectSoftware\WCOA\Exception\PermissionDeniedException;
+use Exception;
 use JsonException;
 
 /**
@@ -11,6 +16,12 @@ use JsonException;
  */
 class Ajax
 {
+	/** @since 2.5.0 */
+	public const ADD_ATTACHMENT_ACTION = "wcoa_add_attachment";
+
+	/** @since 2.5.0 */
+	public const ADD_ATTACHMENT_NONCE = "wcoa_add_attachment_nonce";
+
 	private static ?Ajax $instance = null;
 
 	public static function getInstance(): Ajax
@@ -33,40 +44,74 @@ class Ajax
 	{
 		header('Content-Type: application/json; charset=utf-8');
 
-		$response = [
-			'status' => 'error',
-			'code' => -1,
-			'message' => __('Error saving media file.')
-		];
-
-		if (isset($_FILES['attachment']['name']))
-		{
-			$file = $_FILES['attachment'];
-			$order_id = $_POST['order_id'];
-
-			$attachment = new Attachment($file, $order_id);
-			$result = $attachment->save();
-
-			if ($result !== false)
-			{
-				$response = [
-					'status' => 'success',
-					'code' => 0,
-					'message' => sprintf(__('%s media file attached.'), 1),
-					'data' => $result
-				];
-			}
-		} else {
-			$response['message'] = __('No file was uploaded.');
-		}
-
 		try
 		{
+			$response = new JsonResponse(
+				__('Error saving media file.'),
+				false
+			);
+
+			try
+			{
+				if (check_ajax_referer(self::ADD_ATTACHMENT_ACTION, self::ADD_ATTACHMENT_NONCE, false) === false)
+				{
+					throw new AjaxVerificationFailedException();
+				}
+
+				if (isset($_FILES['attachment']['name']))
+				{
+					$file = $_FILES['attachment'];
+					$order_id = $_POST['order_id'];
+
+					if (!current_user_can('edit_post', $order_id))
+					{
+						throw new PermissionDeniedException();
+					}
+
+					$attachment = new Attachment($file, $order_id);
+					$result = $attachment->save();
+
+					if ($result !== null)
+					{
+						$response = new JsonResponse(
+							sprintf(__('%s media file attached.'), 1),
+							true,
+							$result
+						);
+					}
+				}
+				else
+				{
+					throw new NoFileUploadedException();
+				}
+			}
+			catch (AjaxVerificationFailedException)
+			{
+				$response->setMessage(sprintf(__('The authenticity of %s could not be verified.'), 'nonce'));
+			}
+			catch (PermissionDeniedException)
+			{
+				$response->setMessage(__('Sorry, you are not allowed to perform this action.'));
+			}
+			catch (InvalidFileTypeException)
+			{
+				$response->setMessage(__('File upload stopped by extension.'));
+			}
+			catch (NoFileUploadedException)
+			{
+				$response->setMessage( __('No file was uploaded.') );
+			}
+			catch (Exception $e)
+			{
+				$response->setMessage(__('Error saving media file.'));
+				Logger::getInstance()->error("An error occurred during upload attachment.", $e->getTrace());
+			}
+
 			print json_encode($response, JSON_THROW_ON_ERROR);
 		}
 		catch (JsonException $e)
 		{
-			print sprintf("{\"status\": \"success\", \"code\": 0, \"message\": \"%s\"}", $e->getMessage());
+			print JsonResponse::pure(true, $e->getMessage());
 		}
 
 		wp_die();
@@ -76,10 +121,10 @@ class Ajax
 	{
 		header('Content-Type: application/json; charset=utf-8');
 
-		$response = [
-			'status' => 'error',
-			'code' => -1
-		];
+		$response = new JsonResponse(
+			'',
+			false
+		);
 
 		$attachment_id = -1;
 
@@ -99,13 +144,10 @@ class Ajax
 			$notification = new Notification($_POST['order_id'], $attachment_id);
 			$notification->send_email();
 
-			$response = [
-				'status' => 'success',
-				'code' => 0
-			];
+			$response->setSuccess(true);
 		}
 
-		Logger::getInstance()->info(sprintf("Notification sent for attachment ID %s related to order ID %s.", $attachment_id, $_POST['order_id']), $response);
+		Logger::getInstance()->info(sprintf("Notification sent for attachment ID %s related to order ID %s.", $attachment_id, $_POST['order_id']), $response->toArray());
 
 		try
 		{
@@ -113,7 +155,7 @@ class Ajax
 		}
 		catch (JsonException)
 		{
-			print "{\"status\": \"success\", \"code\": 0}";
+			print JsonResponse::pure(true);
 		}
 
 		wp_die();
